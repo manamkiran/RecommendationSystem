@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<setup xmlns="https:/>/www.benerator.de/schema/1.0.0+jdk-8"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="https://www.benerator.de/schema/1.0.0+jdk-8 benerator-1.0.0+jdk-8.xsd">
+
+    <comment>
+        Reproduces an existing database
+    </comment>
+
+    <comment>defining a database that will be referred by the id 'db' later</comment>
+    <database id="db"
+        url="jdbc:mysql://localhost:3306/ssrecommendation"
+        driver="com.mysql.jdbc.Driver"
+        user="data"
+		schema="ssrecommendation"
+    catalog = "ssrecommendation"
+        password="data"/>
+		
+		<import platforms="db"/>
+		<import domains="person"/>
+		
+		<bean id="out" class="SQLEntityExporter">
+			<property name="dialect" value="MySQLDialect" />
+		</bean>
+
+    <comment>Create a valid predefined base data set for regression testing by importing a DbUnit file</comment>
+    <!--<iterate source="base.dbunit.xml" consumer="ConsoleExporter"/>-->
+
+    <generate type="user" count="1000" consumer="db">
+	<variable name="person" generator="com.rapiddweller.domain.person.PersonGenerator" dataset="IN" />
+        <id name="userName" script="person.givenName+person.familyName" />
+		<attribute name="firstName" script="person.givenName" />
+		<attribute name="lastName" script="person.familyName" />
+        <attribute name="emailId" script="person.email" />
+        <attribute name="mobileNumber" pattern="[0-9]{10}" />
+        <attribute name="password" script="person.givenName" />
+    </generate>
+
+    <generate name="servicerequest" count="0" consumer="SQLEntityExporter ">
+        <!--reference name="creatorName" source="db" targetType="ngo" nullQuota="1" /-->
+        <!--attribute name="category" nullQuota="1" /-->
+        <!--attribute name="createdDate" nullQuota="1" /-->
+        <!--attribute name="description" nullQuota="1" /-->
+        <!--attribute name="requestName" nullQuota="1" /-->
+        <!--attribute name="requesterName" nullQuota="1" /-->
+        <!--attribute name="requesterNumber" nullQuota="1" /-->
+        <!--attribute name="totalQuantityAcquired" /-->
+        <!--attribute name="totalQuantityRequired" /-->
+        <!--attribute name="updatedDate" nullQuota="1" /-->
+        <!--attribute name="schedule" nullQuota="1" /-->
+    </generate>
+
+    <generate name="serviceresponse" count="0" consumer="SQLEntityExporter ">
+        <!--id name="id" nullQuota="1" /-->
+        <!--reference name="serviceRequestId" source="db" targetType="servicerequest" nullQuota="1" /-->
+        <!--reference name="userId" source="db" targetType="user" nullQuota="1" /-->
+        <!--attribute name="createdDate" nullQuota="1" /-->
+        <!--attribute name="quantityProvided" /-->
+        <!--attribute name="comment" nullQuota="1" /-->
+        <!--attribute name="rating" /-->
+        <!--attribute name="category" nullQuota="1" /-->
+    </generate>
+
+    <generate name="user_interestedcategories" count="0" consumer="SQLEntityExporter ">
+        <!--reference name="User_userName" source="db" targetType="user" /-->
+        <!--attribute name="interestedCategories" nullQuota="1" /-->
+    </generate>
+
+    
+
+</setup>

@@ -1,0 +1,1 @@
+java -Xmx6G -Xms2G -jar target\recommendation-1.0.0.jar
